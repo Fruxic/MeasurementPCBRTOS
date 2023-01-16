@@ -63,6 +63,7 @@ void Error_Handler(void);
 #define CS_GPIO_Port GPIOA
 #define RTS_Pin GPIO_PIN_11
 #define RTS_GPIO_Port GPIOA
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
