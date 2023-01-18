@@ -28,8 +28,8 @@
 #include "definesMeas.h"
 #include "variablesMeas.h"
 #include "i2c.h"
-#include "spi.h"
 #include "usart.h"
+#include "adc.h"
 #include "gpio.h"
 #include <string.h>
 #include <stdio.h>
@@ -63,27 +63,27 @@ osThreadId_t AccelerometerHandle;
 const osThreadAttr_t Accelerometer_attributes = {
   .name = "Accelerometer",
   .stack_size = 12288 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for Humidity */
 osThreadId_t HumidityHandle;
 const osThreadAttr_t Humidity_attributes = {
   .name = "Humidity",
-  .stack_size = 1024 * 4,
+  .stack_size = 2048 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for Temperature */
 osThreadId_t TemperatureHandle;
 const osThreadAttr_t Temperature_attributes = {
   .name = "Temperature",
-  .stack_size = 1024 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .stack_size = 2048 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for UART */
 osThreadId_t UARTHandle;
 const osThreadAttr_t UART_attributes = {
   .name = "UART",
-  .stack_size = 1024 * 4,
+  .stack_size = 2048 * 4,
   .priority = (osPriority_t) osPriorityAboveNormal,
 };
 
@@ -149,8 +149,6 @@ void MX_FREERTOS_Init(void) {
 void StartAccelerometer(void *argument)
 {
   /* USER CODE BEGIN StartAccelerometer */
-  int16_t rawXaxis[FFT_SIZE];
-  int16_t rawYaxis[FFT_SIZE];
   int16_t rawZaxis[FFT_SIZE];
 
   int16_t maxValueAxis;
@@ -165,53 +163,6 @@ void StartAccelerometer(void *argument)
   for(;;)
   {
 	if(I2C_lock == 0){
-		//X axis
-//	  	I2C_trans[0] = LIS2_OUTXH;
-//		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			//error handler
-//			do{
-//				vTaskDelay(1000);
-//				ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY);
-//			}while(ret != HAL_OK);
-//		}
-//		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			//error handler
-//			for(;;);
-//		}
-//		rawXaxis[x] = I2C_recv[0] << 8;
-//
-//		I2C_trans[0] = LIS2_OUTXL;
-//		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			for(;;);
-//		}
-//		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			for(;;);
-//		}
-//		rawXaxis[x] = (rawXaxis[x] | I2C_recv[0])/4;
-
-		//Y axis
-//		I2C_trans[0] = LIS2_OUTYH;
-//		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			//error handler
-//			for(;;);
-//		}
-//		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			//error handler
-//			for(;;);
-//		}
-//		rawYaxis[x] = I2C_recv[0] << 8;
-//
-//		I2C_trans[0] = LIS2_OUTYL;
-//		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			//error handler
-//			for(;;);
-//		}
-//		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
-//			//error handler
-//			for(;;);
-//		}
-//		rawYaxis[x] = (rawYaxis[x] | I2C_recv[0])/4;
-
 		//Z axis
 		I2C_trans[0] = LIS2_OUTZH;
 		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
@@ -223,18 +174,18 @@ void StartAccelerometer(void *argument)
 		}
 		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-			for(;;);
+//			for(;;);
 		}
 		rawZaxis[x] = I2C_recv[0] << 8;
 
 		I2C_trans[0] = LIS2_OUTZL;
 		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-			for(;;);
+//			for(;;);
 		}
 		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-			for(;;);
+//			for(;;);
 		}
 		rawZaxis[x] = (rawZaxis[x] | I2C_recv[0])/4;//14 bit divide by 4, 12 bit divide by 16
 		x++;
@@ -278,7 +229,7 @@ void StartAccelerometer(void *argument)
 			x = 0;
 		}
 	}
-	osDelay(2);
+	osDelay(1000);
   }
   // In case we accidentally leave loop
   osThreadTerminate(NULL);
@@ -296,7 +247,6 @@ void StartHumidity(void *argument)
 {
   /* USER CODE BEGIN StartHumidity */
   uint16_t val;
-
   float hum_rh;
   float temp_c;
   /* Infinite loop */
@@ -308,9 +258,11 @@ void StartHumidity(void *argument)
 	I2C_lock = 1;
 	if((ret = HAL_I2C_Master_Transmit(&hi2c1, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
 		//error handler
+//		for(;;);
 	}
 	if((ret = HAL_I2C_Master_Receive(&hi2c1, SHT31_ADDR, I2C_recv, 10, HAL_MAX_DELAY)) != HAL_OK){
 		//error handler
+//		for(;;);
 	}
 	I2C_lock = 0;
 	val = I2C_recv[0] << 8 | I2C_recv[1];
@@ -321,7 +273,7 @@ void StartHumidity(void *argument)
 	if(hum_rh >= 75){
 		humAlarm = 1;
 	}
-	osDelay(100);
+	osDelay(500);
   }
   // In case we accidentally leave loop
   osThreadTerminate(NULL);
@@ -338,41 +290,20 @@ void StartHumidity(void *argument)
 void StartTemperature(void *argument)
 {
   /* USER CODE BEGIN StartTemperature */
-  int32_t val = 0;
-//  float tempTemp = 0;
-//  uint8_t tempCounter = 0;
+  uint32_t rawValue;
   float voltage = 0;
-  float voltageDif = 0;
-  float voltageFix = VOLTAGE/2;
   float resistance = 0;
   /* Infinite loop */
   for(;;)
   {
-	val = 0;
-	voltage = 0;
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
-	vTaskDelay(500);
-	//Read ADC
-	SPI_trans[0] =  MCP_ADDR | MCP_DATA | MCP_STATICREAD;
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-	if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-		//error handler
-		while(1);
-	}
-	for(int i = 0; i <= 255; i++);
-	if((ret = HAL_SPI_Receive(&hspi1, SPI_recv, 3, HAL_MAX_DELAY)) != HAL_OK){
-		//error handler
-		while(1);
-	}
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-	//get voltage and resistance
-	val = (SPI_recv[0] << 24 | SPI_recv[1] << 18 | SPI_recv[2] << 8)/256;
-	voltageDif = (VOLTAGE*val)/8388608;
-	voltage = voltageDif + voltageFix;
+	vTaskDelay(100);
+	HAL_ADC_Start(&hadc1);
+	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+	rawValue = HAL_ADC_GetValue(&hadc1);
+	voltage = (VOLTAGE*rawValue)/RESOLUTION;
 	resistance = (voltage*RESISTANCE)/(VOLTAGE-voltage);
-	//Steinhart and Hart approach
 	temp = (1/(A + (B*log(resistance)) + (C*pow(log(resistance),2)) + (D*pow(log(resistance),3)))) - KELVIN;
-	vTaskDelay(300);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
 	osDelay(500);
   }

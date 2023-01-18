@@ -22,4 +22,4 @@ unsigned char humAlarm = 0;
 float freq;
 float ampAvg;
 float ampMax;
-double temp;
+float temp;

@@ -11,6 +11,8 @@
 #define	ARM_MATH_CM4
 
 #define CLOCK				100000000
+
+#define RESOLUTION			4096
 #define VOLTAGE				3.3
 #define RESISTANCE			10000
 #define KELVIN				273.15
@@ -43,26 +45,6 @@
 //Z-axis output
 #define LIS2_OUTZL			0x2C
 #define LIS2_OUTZH			0x2D
-
-//ADC address
-#define MCP_ADDR			0x01 << 6
-//ADC Command Byte
-#define MCP_CMD_CONV		0x68
-#define MCP_CMD_RESET		0x7C
-
-#define MCP_STATICREAD		0x01
-#define MCP_WRITE			0x02
-#define MCP_READ			0x03
-//ADC registers
-#define MCP_MUX				0x6 << 2
-#define MCP_CONF0			0x1 << 2
-#define MCP_CONF1			0x2 << 2
-#define MCP_CONF2			0x3 << 2
-#define MCP_CONF3			0x4 << 2
-#define MCP_DATA			0x0 << 2
-#define MCP_IRQ				0x5 << 2
-#define MCP_OFFS			0x9 << 2
-#define MCP_GAINCAL			0xA << 2
 
 #define SAMPLES             2048            /* 1024 real parts and 1024 imaginary parts */
 #define FFT_SIZE            SAMPLES / 2     /* FFT size is always the same size as we have samples, so 512 in our case */

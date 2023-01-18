@@ -59,10 +59,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define thermistorSwitch_Pin GPIO_PIN_0
 #define thermistorSwitch_GPIO_Port GPIOA
-#define CS_Pin GPIO_PIN_4
-#define CS_GPIO_Port GPIOA
-#define RTS_Pin GPIO_PIN_11
-#define RTS_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

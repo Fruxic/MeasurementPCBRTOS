@@ -19,8 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "adc.h"
 #include "i2c.h"
-#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -99,173 +99,44 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
-  MX_SPI1_Init();
   MX_USART1_UART_Init();
+  MX_I2C2_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   /*initialize humidity module (I2C)*/
   //Check if device is connected
-  if((ret = HAL_I2C_IsDeviceReady(&hi2c1, SHT31_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-  }
-  //Disable heater
-  I2C_trans[0] = SHT31_HEATER_First;
-  I2C_trans[1] = SHT31_HEATER_Second;
-  if((ret = HAL_I2C_Master_Transmit(&hi2c1, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-  }
+//  if((ret = HAL_I2C_IsDeviceReady(&hi2c2, SHT31_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
+//	  //error handler
+//	  for(;;);
+//  }
+//  //Disable heater
+//  I2C_trans[0] = SHT31_HEATER_First;
+//  I2C_trans[1] = SHT31_HEATER_Second;
+//  if((ret = HAL_I2C_Master_Transmit(&hi2c2, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
+//	  //error handler
+//	  for(;;);
+//  }
   /*Initialize accelerometer module (I2C)*/
   //check if device is connected
-  if((ret = HAL_I2C_IsDeviceReady(&hi2c1, LIS2_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-  }
-  //Write setting to control register 1
-  I2C_trans[0] = LIS2_CTRL1_ADDR;
-  I2C_trans[1] = LIS2_CTRL1_Write;
-  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-  }
-  //Write setting to FIFO register
-  I2C_trans[0] = LIS2_FIFO_ADDR;
-  I2C_trans[1] = LIS2_FIFO_Write;
-  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-  }
-  /*Initialize Temp module (SPI)*/
-  //Reset command
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_CMD_RESET;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  //Setup MUX
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_MUX | MCP_WRITE;
-  SPI_trans[1] = 0x01;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_MUX | MCP_STATICREAD;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  if((ret = HAL_SPI_Receive(&hspi1, SPI_recv, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  //Write settings to config register 0
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF0 | MCP_WRITE;
-  SPI_trans[1] = 0xC3;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF0 | MCP_STATICREAD;	//01000101
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  if((ret = HAL_SPI_Receive(&hspi1, SPI_recv, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  //Write settings to config register 1
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF1 | MCP_WRITE;
-  SPI_trans[1] = 0xCC; //F0 for diff CC for single
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF1 | MCP_STATICREAD;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  if((ret = HAL_SPI_Receive(&hspi1, SPI_recv, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  //Write settings to config register 2
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF2 | MCP_WRITE;
-  SPI_trans[1] = 0x0B;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF2 | MCP_STATICREAD;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  if((ret = HAL_SPI_Receive(&hspi1, SPI_recv, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  //Write settings to config register 3
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF3 | MCP_WRITE;
-  SPI_trans[1] = 0xC0;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_CONF3 | MCP_STATICREAD;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  if((ret = HAL_SPI_Receive(&hspi1, SPI_recv, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  //error handler
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  //Write settings to config IRQ
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_IRQ | MCP_WRITE;
-  SPI_trans[1] = 0x77;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_ADDR | MCP_IRQ | MCP_STATICREAD;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  while(1);
-  }
-  if((ret = HAL_SPI_Receive(&hspi1, SPI_recv, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-
-  //Conversion start thermistor
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  SPI_trans[0] = MCP_CMD_CONV;
-  if((ret = HAL_SPI_Transmit(&hspi1, SPI_trans, 1, HAL_MAX_DELAY)) != HAL_OK){
-	  while(1);
-  }
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
-  HAL_Delay(500);
+//  if((ret = HAL_I2C_IsDeviceReady(&hi2c1, LIS2_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
+//	  //error handler
+//	  for(;;);
+//  }
+//  //Write setting to control register 1
+//  I2C_trans[0] = LIS2_CTRL1_ADDR;
+//  I2C_trans[1] = LIS2_CTRL1_Write;
+//  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
+//	  //error handler
+//	  for(;;);
+//  }
+//  //Write setting to FIFO register
+//  I2C_trans[0] = LIS2_FIFO_ADDR;
+//  I2C_trans[1] = LIS2_FIFO_Write;
+//  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
+//	  //error handler
+//	  for(;;);
+//  }
+  HAL_Delay(100);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -304,10 +175,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 16;
   RCC_OscInitStruct.PLL.PLLN = 256;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
@@ -327,7 +199,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
   {
     Error_Handler();
   }

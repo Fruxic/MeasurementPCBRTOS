@@ -1,5 +1,5 @@
 ../Core/Src/freertos.c:107:6:MX_FREERTOS_Init	8	static
-../Core/Src/freertos.c:149:6:StartAccelerometer	18480	static
-../Core/Src/freertos.c:295:6:StartHumidity	40	static
-../Core/Src/freertos.c:338:6:StartTemperature	48	static
-../Core/Src/freertos.c:391:6:StartUART	112	static
+../Core/Src/freertos.c:149:6:StartAccelerometer	14384	static
+../Core/Src/freertos.c:246:6:StartHumidity	40	static
+../Core/Src/freertos.c:290:6:StartTemperature	40	static
+../Core/Src/freertos.c:322:6:StartUART	112	static

@@ -25,6 +25,6 @@ extern unsigned char humAlarm;
 extern float freq;
 extern float ampAvg;
 extern float ampMax;
-extern double temp;
+extern float temp;
 
 #endif /* INC_VARIABLESMEAS_H_ */
