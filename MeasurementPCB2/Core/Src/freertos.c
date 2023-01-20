@@ -58,46 +58,38 @@ arm_cfft_radix4_instance_f32 L;    /* ARM CFFT module */
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for Accelerometer */
-osThreadId_t AccelerometerHandle;
-const osThreadAttr_t Accelerometer_attributes = {
-  .name = "Accelerometer",
-  .stack_size = 12288 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for Humidity */
-osThreadId_t HumidityHandle;
-const osThreadAttr_t Humidity_attributes = {
-  .name = "Humidity",
-  .stack_size = 2048 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for Temperature */
-osThreadId_t TemperatureHandle;
-const osThreadAttr_t Temperature_attributes = {
-  .name = "Temperature",
-  .stack_size = 2048 * 4,
-  .priority = (osPriority_t) osPriorityBelowNormal,
-};
-/* Definitions for UART */
-osThreadId_t UARTHandle;
-const osThreadAttr_t UART_attributes = {
-  .name = "UART",
-  .stack_size = 2048 * 4,
-  .priority = (osPriority_t) osPriorityAboveNormal,
-};
+osThreadId EmptyHandle;
+osThreadId AccelerometerHandle;
+osThreadId HumidityHandle;
+osThreadId TemperatureHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
 
-void StartAccelerometer(void *argument);
-void StartHumidity(void *argument);
-void StartTemperature(void *argument);
-void StartUART(void *argument);
+void StartEmpty(void const * argument);
+void startAccelerometer(void const * argument);
+void startHumidity(void const * argument);
+void startTemperature(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* GetIdleTaskMemory prototype (linked to static allocation support) */
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+
+/* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
+static StaticTask_t xIdleTaskTCBBuffer;
+static StackType_t xIdleStack[configMINIMAL_STACK_SIZE];
+
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+{
+  *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
+  *ppxIdleTaskStackBuffer = &xIdleStack[0];
+  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+  /* place for user code */
+}
+/* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
   * @brief  FreeRTOS initialization
@@ -111,44 +103,76 @@ void MX_FREERTOS_Init(void) {
   /* Initialize the CFFT/CIFFT module, intFlag = 0, doBitReverse = 1 */
   arm_cfft_radix4_init_f32(&L, FFT_SIZE, 0, 1);
   /* USER CODE END Init */
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * File Name          : freertos.c
-  * Description        : Code for freertos applications
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2022 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
 
-/**
-  * @}
-  */
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
 
-/**
-  * @}
-  */
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* definition and creation of Empty */
+  osThreadDef(Empty, StartEmpty, osPriorityIdle, 0, 128);
+  EmptyHandle = osThreadCreate(osThread(Empty), NULL);
+
+  /* definition and creation of Accelerometer */
+  osThreadDef(Accelerometer, startAccelerometer, osPriorityRealtime, 0, 12800);
+  AccelerometerHandle = osThreadCreate(osThread(Accelerometer), NULL);
+
+  /* definition and creation of Humidity */
+  osThreadDef(Humidity, startHumidity, osPriorityLow, 0, 512);
+  HumidityHandle = osThreadCreate(osThread(Humidity), NULL);
+
+  /* definition and creation of Temperature */
+  osThreadDef(Temperature, startTemperature, osPriorityNormal, 0, 512);
+  TemperatureHandle = osThreadCreate(osThread(Temperature), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
 }
 
-/* USER CODE BEGIN Header_StartAccelerometer */
+/* USER CODE BEGIN Header_StartEmpty */
 /**
-  * @brief  Function implementing the Accelerometer thread.
+  * @brief  Function implementing the Empty thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartAccelerometer */
-void StartAccelerometer(void *argument)
+/* USER CODE END Header_StartEmpty */
+void StartEmpty(void const * argument)
 {
-  /* USER CODE BEGIN StartAccelerometer */
+  /* USER CODE BEGIN StartEmpty */
+  /* Infinite loop */
+  for(;;)
+  {
+	osDelay(1);
+  }
+  // In case we accidentally leave loop
+  osThreadTerminate(NULL);
+  /* USER CODE END StartEmpty */
+}
+
+/* USER CODE BEGIN Header_startAccelerometer */
+/**
+* @brief Function implementing the Accelerometer thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_startAccelerometer */
+void startAccelerometer(void const * argument)
+{
+  /* USER CODE BEGIN startAccelerometer */
   int16_t rawZaxis[FFT_SIZE];
 
   int16_t maxValueAxis;
@@ -167,10 +191,10 @@ void StartAccelerometer(void *argument)
 		I2C_trans[0] = LIS2_OUTZH;
 		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-			do{
-				vTaskDelay(1000);
-				ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY);
-			}while(ret != HAL_OK);
+//			do{
+//				vTaskDelay(1000);
+//				ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY);
+//			}while(ret != HAL_OK);
 		}
 		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
@@ -229,23 +253,23 @@ void StartAccelerometer(void *argument)
 			x = 0;
 		}
 	}
-	osDelay(1000);
+	osDelay(2);
   }
   // In case we accidentally leave loop
   osThreadTerminate(NULL);
-  /* USER CODE END StartAccelerometer */
+  /* USER CODE END startAccelerometer */
 }
 
-/* USER CODE BEGIN Header_StartHumidity */
+/* USER CODE BEGIN Header_startHumidity */
 /**
 * @brief Function implementing the Humidity thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartHumidity */
-void StartHumidity(void *argument)
+/* USER CODE END Header_startHumidity */
+void startHumidity(void const * argument)
 {
-  /* USER CODE BEGIN StartHumidity */
+  /* USER CODE BEGIN startHumidity */
   uint16_t val;
   float hum_rh;
   float temp_c;
@@ -273,23 +297,23 @@ void StartHumidity(void *argument)
 	if(hum_rh >= 75){
 		humAlarm = 1;
 	}
-	osDelay(500);
+	osDelay(1000);
   }
   // In case we accidentally leave loop
   osThreadTerminate(NULL);
-  /* USER CODE END StartHumidity */
+  /* USER CODE END startHumidity */
 }
 
-/* USER CODE BEGIN Header_StartTemperature */
+/* USER CODE BEGIN Header_startTemperature */
 /**
 * @brief Function implementing the Temperature thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartTemperature */
-void StartTemperature(void *argument)
+/* USER CODE END Header_startTemperature */
+void startTemperature(void const * argument)
 {
-  /* USER CODE BEGIN StartTemperature */
+  /* USER CODE BEGIN startTemperature */
   uint32_t rawValue;
   float voltage = 0;
   float resistance = 0;
@@ -305,39 +329,14 @@ void StartTemperature(void *argument)
 	resistance = (voltage*RESISTANCE)/(VOLTAGE-voltage);
 	temp = (1/(A + (B*log(resistance)) + (C*pow(log(resistance),2)) + (D*pow(log(resistance),3)))) - KELVIN;
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
-	osDelay(500);
+	osDelay(400);
   }
   // In case we accidentally leave loop
   osThreadTerminate(NULL);
-  /* USER CODE END StartTemperature */
-}
-
-/* USER CODE BEGIN Header_StartUART */
-/**
-* @brief Function implementing the UART thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartUART */
-void StartUART(void *argument)
-{
-  /* USER CODE BEGIN StartUART */
-  char UART_buf[50];
-  /* Infinite loop */
-  for(;;)
-  {
-	sprintf((char *)UART_buf, "%6.2f,%6.2f,%6.2f,%d", ampMax, freq, temp, humAlarm);
-	HAL_UART_Transmit(&huart1, UART_buf, strlen(UART_buf), HAL_MAX_DELAY);
-	humAlarm = 0;
-	osDelay(500);
-  }
-  // In case we accidentally leave loop
-  osThreadTerminate(NULL);
-  /* USER CODE END StartUART */
+  /* USER CODE END startTemperature */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
-

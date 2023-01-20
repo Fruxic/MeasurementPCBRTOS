@@ -51,7 +51,7 @@ HAL_StatusTypeDef ret;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+unsigned char string[] = "40.40,20.30,33.22,0/r/n";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -136,11 +136,10 @@ int main(void)
 //	  //error handler
 //	  for(;;);
 //  }
-  HAL_Delay(100);
+  strcpy(UART_trans, string);
   /* USER CODE END 2 */
 
-  /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 
   /* Start scheduler */
@@ -208,6 +207,15 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 float complexABS(float real, float compl) {
 	return sqrtf((real*real)+(compl*compl));
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+  if(GPIO_Pin == GPIO_PIN_11) {
+    HAL_UART_Transmit(&huart1, (const char *)UART_trans, strlen(UART_trans), HAL_MAX_DELAY);
+    __NOP();
+  } else {
+      __NOP();
+  }
 }
 /* USER CODE END 4 */
 

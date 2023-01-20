@@ -53,12 +53,15 @@ extern HAL_StatusTypeDef ret;
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+float complexABS(float real, float compl);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 #define thermistorSwitch_Pin GPIO_PIN_0
 #define thermistorSwitch_GPIO_Port GPIOA
+#define CTS_Pin GPIO_PIN_11
+#define CTS_GPIO_Port GPIOA
+#define CTS_EXTI_IRQn EXTI15_10_IRQn
 
 /* USER CODE BEGIN Private defines */
 
