@@ -21,7 +21,7 @@ unsigned long delta;
 
 //Variables to be sent
 unsigned char humAlarm = 0;
-float freq;
-float ampAvg;
-float ampMax;
-float temp;
+double freq;
+double ampAvg;
+double ampMax;
+double temp;

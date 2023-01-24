@@ -25,9 +25,9 @@ extern unsigned long delta;
 
 //Variables to be sent
 extern unsigned char humAlarm;
-extern float freq;
-extern float ampAvg;
-extern float ampMax;
-extern float temp;
+extern double freq;
+extern double ampAvg;
+extern double ampMax;
+extern double temp;
 
 #endif /* INC_VARIABLESMEAS_H_ */

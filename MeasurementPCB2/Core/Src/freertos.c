@@ -191,25 +191,25 @@ void startAccelerometer(void const * argument)
 		I2C_trans[0] = LIS2_OUTZH;
 		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-//			do{
-//				vTaskDelay(1000);
-//				ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY);
-//			}while(ret != HAL_OK);
+			do{
+				vTaskDelay(1000);
+				ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY);
+			}while(ret != HAL_OK);
 		}
 		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-//			for(;;);
+			for(;;);
 		}
 		rawZaxis[x] = I2C_recv[0] << 8;
 
 		I2C_trans[0] = LIS2_OUTZL;
 		if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, &I2C_trans[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-//			for(;;);
+			for(;;);
 		}
 		if((ret = HAL_I2C_Master_Receive(&hi2c1, LIS2_ADDR, &I2C_recv[0], 1, HAL_MAX_DELAY)) != HAL_OK){
 			//error handler
-//			for(;;);
+			for(;;);
 		}
 		rawZaxis[x] = (rawZaxis[x] | I2C_recv[0])/4;//14 bit divide by 4, 12 bit divide by 16
 		x++;
@@ -280,13 +280,13 @@ void startHumidity(void const * argument)
 	I2C_trans[1] = 0x10;
 
 	I2C_lock = 1;
-	if((ret = HAL_I2C_Master_Transmit(&hi2c1, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
+	if((ret = HAL_I2C_Master_Transmit(&hi2c2, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
 		//error handler
-//		for(;;);
+		for(;;);
 	}
-	if((ret = HAL_I2C_Master_Receive(&hi2c1, SHT31_ADDR, I2C_recv, 10, HAL_MAX_DELAY)) != HAL_OK){
+	if((ret = HAL_I2C_Master_Receive(&hi2c2, SHT31_ADDR, I2C_recv, 10, HAL_MAX_DELAY)) != HAL_OK){
 		//error handler
-//		for(;;);
+		for(;;);
 	}
 	I2C_lock = 0;
 	val = I2C_recv[0] << 8 | I2C_recv[1];

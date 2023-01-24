@@ -51,7 +51,6 @@ HAL_StatusTypeDef ret;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-unsigned char string[] = "40.40,20.30,33.22,0/r/n";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,38 +104,37 @@ int main(void)
   /* USER CODE BEGIN 2 */
   /*initialize humidity module (I2C)*/
   //Check if device is connected
-//  if((ret = HAL_I2C_IsDeviceReady(&hi2c2, SHT31_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
-//	  //error handler
-//	  for(;;);
-//  }
-//  //Disable heater
-//  I2C_trans[0] = SHT31_HEATER_First;
-//  I2C_trans[1] = SHT31_HEATER_Second;
-//  if((ret = HAL_I2C_Master_Transmit(&hi2c2, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-//	  //error handler
-//	  for(;;);
-//  }
+  if((ret = HAL_I2C_IsDeviceReady(&hi2c2, SHT31_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
+	  //error handler
+	  for(;;);
+  }
+  //Disable heater
+  I2C_trans[0] = SHT31_HEATER_First;
+  I2C_trans[1] = SHT31_HEATER_Second;
+  if((ret = HAL_I2C_Master_Transmit(&hi2c2, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
+	  //error handler
+	  for(;;);
+  }
   /*Initialize accelerometer module (I2C)*/
   //check if device is connected
-//  if((ret = HAL_I2C_IsDeviceReady(&hi2c1, LIS2_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
-//	  //error handler
-//	  for(;;);
-//  }
-//  //Write setting to control register 1
-//  I2C_trans[0] = LIS2_CTRL1_ADDR;
-//  I2C_trans[1] = LIS2_CTRL1_Write;
-//  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-//	  //error handler
-//	  for(;;);
-//  }
-//  //Write setting to FIFO register
-//  I2C_trans[0] = LIS2_FIFO_ADDR;
-//  I2C_trans[1] = LIS2_FIFO_Write;
-//  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
-//	  //error handler
-//	  for(;;);
-//  }
-  strcpy(UART_trans, string);
+  if((ret = HAL_I2C_IsDeviceReady(&hi2c1, LIS2_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
+	  //error handler
+	  for(;;);
+  }
+  //Write setting to control register 1
+  I2C_trans[0] = LIS2_CTRL1_ADDR;
+  I2C_trans[1] = LIS2_CTRL1_Write;
+  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
+	  //error handler
+	  for(;;);
+  }
+  //Write setting to FIFO register
+  I2C_trans[0] = LIS2_FIFO_ADDR;
+  I2C_trans[1] = LIS2_FIFO_Write;
+  if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
+	  //error handler
+	  for(;;);
+  }
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -211,10 +209,9 @@ float complexABS(float real, float compl) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
   if(GPIO_Pin == GPIO_PIN_11) {
-    HAL_UART_Transmit(&huart1, (const char *)UART_trans, strlen(UART_trans), HAL_MAX_DELAY);
+	sprintf((char *)UART_trans, "%5.2f,%6.2f,%6.2f,%d", ampMax, freq, temp, humAlarm);
+    ret = HAL_UART_Transmit(&huart1, (const char *)UART_trans, strlen(UART_trans), HAL_MAX_DELAY);
     __NOP();
-  } else {
-      __NOP();
   }
 }
 /* USER CODE END 4 */
