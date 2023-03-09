@@ -106,6 +106,7 @@ int main(void)
   //Check if device is connected
   if((ret = HAL_I2C_IsDeviceReady(&hi2c2, SHT31_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
 	  //error handler
+	  NVIC_SystemReset();
 	  for(;;);
   }
   //Disable heater
@@ -113,12 +114,14 @@ int main(void)
   I2C_trans[1] = SHT31_HEATER_Second;
   if((ret = HAL_I2C_Master_Transmit(&hi2c2, SHT31_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
 	  //error handler
+	  NVIC_SystemReset();
 	  for(;;);
   }
   /*Initialize accelerometer module (I2C)*/
   //check if device is connected
   if((ret = HAL_I2C_IsDeviceReady(&hi2c1, LIS2_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
 	  //error handler
+	  NVIC_SystemReset();
 	  for(;;);
   }
   //Write setting to control register 1
@@ -126,6 +129,7 @@ int main(void)
   I2C_trans[1] = LIS2_CTRL1_Write;
   if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
 	  //error handler
+	  NVIC_SystemReset();
 	  for(;;);
   }
   //Write setting to FIFO register
@@ -133,6 +137,7 @@ int main(void)
   I2C_trans[1] = LIS2_FIFO_Write;
   if((ret = HAL_I2C_Master_Transmit(&hi2c1, LIS2_ADDR, I2C_trans, 2, HAL_MAX_DELAY)) != HAL_OK){
 	  //error handler
+	  NVIC_SystemReset();
 	  for(;;);
   }
   /* USER CODE END 2 */
@@ -142,7 +147,6 @@ int main(void)
 
   /* Start scheduler */
   osKernelStart();
-
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -210,8 +214,7 @@ float complexABS(float real, float compl) {
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
   if(GPIO_Pin == GPIO_PIN_11) {
 	sprintf((char *)UART_trans, "%5.2f,%6.2f,%6.2f,%d", ampMax, freq, temp, humAlarm);
-    ret = HAL_UART_Transmit(&huart1, (const char *)UART_trans, strlen(UART_trans), HAL_MAX_DELAY);
-    __NOP();
+    ret = HAL_UART_Transmit(&huart1, (const uint8_t *)UART_trans, sizeof(UART_trans), HAL_MAX_DELAY);
   }
 }
 /* USER CODE END 4 */

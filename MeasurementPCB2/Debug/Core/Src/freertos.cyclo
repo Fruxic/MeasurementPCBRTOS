@@ -1,0 +1,6 @@
+freertos.c:85:6:vApplicationGetIdleTaskMemory	1
+freertos.c:99:6:MX_FREERTOS_Init	1
+freertos.c:153:6:StartEmpty	1
+freertos.c:173:6:startAccelerometer	13
+freertos.c:270:6:startHumidity	4
+freertos.c:314:6:startTemperature	1
