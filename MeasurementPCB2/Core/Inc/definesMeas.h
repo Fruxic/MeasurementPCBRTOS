@@ -49,9 +49,4 @@
 #define SAMPLES             2048            /* 1024 real parts and 1024 imaginary parts */
 #define FFT_SIZE            SAMPLES / 2     /* FFT size is always the same size as we have samples, so 512 in our case */
 
-/* ticks measurement */
-#define ARM_CM_DEMCR      (*(uint32_t *)0xE000EDFC)
-#define ARM_CM_DWT_CTRL   (*(uint32_t *)0xE0001000)
-#define ARM_CM_DWT_CYCCNT (*(uint32_t *)0xE0001004)
-
 #endif /* INC_DEFINESMEAS_H_ */

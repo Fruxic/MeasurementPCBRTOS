@@ -1,6 +1,7 @@
+../Drivers/CMSIS/Include/core_cm4.h:1939:34:__NVIC_SystemReset	4	static,ignoring_inline_asm
 ../Core/Src/freertos.c:85:6:vApplicationGetIdleTaskMemory	24	static
-../Core/Src/freertos.c:99:6:MX_FREERTOS_Init	128	static
-../Core/Src/freertos.c:153:6:StartEmpty	16	static
-../Core/Src/freertos.c:173:6:startAccelerometer	14384	static
-../Core/Src/freertos.c:270:6:startHumidity	40	static
-../Core/Src/freertos.c:314:6:startTemperature	40	static
+../Core/Src/freertos.c:99:6:MX_FREERTOS_Init	136	static
+../Core/Src/freertos.c:192:6:StartEmpty	16	static
+../Core/Src/freertos.c:212:6:startAccelerometer	14384	static
+../Core/Src/freertos.c:305:6:startHumidity	40	static
+../Core/Src/freertos.c:349:6:startTemperature	40	static
