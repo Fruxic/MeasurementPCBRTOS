@@ -92,12 +92,12 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
 /* USER CODE END GET_IDLE_TASK_MEMORY */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
 void MX_FREERTOS_Init(void) {
-	/* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 	/*initialize humidity module (I2C)*/
 	//Check if device is connected
 	if((ret = HAL_I2C_IsDeviceReady(&hi2c2, SHT31_ADDR, 1, HAL_MAX_DELAY)) != HAL_OK){
@@ -141,44 +141,44 @@ void MX_FREERTOS_Init(void) {
 	arm_rfft_fast_init_f32(&S, FFT_SIZE);
 	/* Initialize the CFFT/CIFFT module, intFlag = 0, doBitReverse = 1 */
 	arm_cfft_radix4_init_f32(&L, FFT_SIZE, 0, 1);
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* USER CODE BEGIN RTOS_MUTEX */
+  /* USER CODE BEGIN RTOS_MUTEX */
 	/* add mutexes, ... */
-	/* USER CODE END RTOS_MUTEX */
+  /* USER CODE END RTOS_MUTEX */
 
-	/* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
 	/* add semaphores, ... */
-	/* USER CODE END RTOS_SEMAPHORES */
+  /* USER CODE END RTOS_SEMAPHORES */
 
-	/* USER CODE BEGIN RTOS_TIMERS */
+  /* USER CODE BEGIN RTOS_TIMERS */
 	/* start timers, add new ones, ... */
-	/* USER CODE END RTOS_TIMERS */
+  /* USER CODE END RTOS_TIMERS */
 
-	/* USER CODE BEGIN RTOS_QUEUES */
+  /* USER CODE BEGIN RTOS_QUEUES */
 	/* add queues, ... */
-	/* USER CODE END RTOS_QUEUES */
+  /* USER CODE END RTOS_QUEUES */
 
-	/* Create the thread(s) */
-	/* definition and creation of Empty */
-	osThreadDef(Empty, StartEmpty, osPriorityIdle, 0, 128);
-	EmptyHandle = osThreadCreate(osThread(Empty), NULL);
+  /* Create the thread(s) */
+  /* definition and creation of Empty */
+  osThreadDef(Empty, StartEmpty, osPriorityIdle, 0, 128);
+  EmptyHandle = osThreadCreate(osThread(Empty), NULL);
 
-	/* definition and creation of Accelerometer */
-	osThreadDef(Accelerometer, startAccelerometer, osPriorityRealtime, 0, 12800);
-	AccelerometerHandle = osThreadCreate(osThread(Accelerometer), NULL);
+  /* definition and creation of Accelerometer */
+  osThreadDef(Accelerometer, startAccelerometer, osPriorityRealtime, 0, 12800);
+  AccelerometerHandle = osThreadCreate(osThread(Accelerometer), NULL);
 
-	/* definition and creation of Humidity */
-	osThreadDef(Humidity, startHumidity, osPriorityLow, 0, 512);
-	HumidityHandle = osThreadCreate(osThread(Humidity), NULL);
+  /* definition and creation of Humidity */
+  osThreadDef(Humidity, startHumidity, osPriorityLow, 0, 512);
+  HumidityHandle = osThreadCreate(osThread(Humidity), NULL);
 
-	/* definition and creation of Temperature */
-	osThreadDef(Temperature, startTemperature, osPriorityNormal, 0, 512);
-	TemperatureHandle = osThreadCreate(osThread(Temperature), NULL);
+  /* definition and creation of Temperature */
+  osThreadDef(Temperature, startTemperature, osPriorityNormal, 0, 512);
+  TemperatureHandle = osThreadCreate(osThread(Temperature), NULL);
 
-	/* USER CODE BEGIN RTOS_THREADS */
+  /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
-	/* USER CODE END RTOS_THREADS */
+  /* USER CODE END RTOS_THREADS */
 
 }
 
@@ -191,7 +191,7 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartEmpty */
 void StartEmpty(void const * argument)
 {
-	/* USER CODE BEGIN StartEmpty */
+  /* USER CODE BEGIN StartEmpty */
 	/* Infinite loop */
 	for(;;)
 	{
@@ -199,7 +199,7 @@ void StartEmpty(void const * argument)
 	}
 	// In case we accidentally leave loop
 	osThreadTerminate(NULL);
-	/* USER CODE END StartEmpty */
+  /* USER CODE END StartEmpty */
 }
 
 /* USER CODE BEGIN Header_startAccelerometer */
@@ -211,7 +211,7 @@ void StartEmpty(void const * argument)
 /* USER CODE END Header_startAccelerometer */
 void startAccelerometer(void const * argument)
 {
-	/* USER CODE BEGIN startAccelerometer */
+  /* USER CODE BEGIN startAccelerometer */
 	int16_t rawZaxis[FFT_SIZE];
 
 	int16_t maxValueAxis;
@@ -292,7 +292,7 @@ void startAccelerometer(void const * argument)
 	}
 	// In case we accidentally leave loop
 	osThreadTerminate(NULL);
-	/* USER CODE END startAccelerometer */
+  /* USER CODE END startAccelerometer */
 }
 
 /* USER CODE BEGIN Header_startHumidity */
@@ -304,7 +304,7 @@ void startAccelerometer(void const * argument)
 /* USER CODE END Header_startHumidity */
 void startHumidity(void const * argument)
 {
-	/* USER CODE BEGIN startHumidity */
+  /* USER CODE BEGIN startHumidity */
 	uint16_t val;
 	float hum_rh;
 	float temp_c;
@@ -336,7 +336,7 @@ void startHumidity(void const * argument)
 	}
 	// In case we accidentally leave loop
 	osThreadTerminate(NULL);
-	/* USER CODE END startHumidity */
+  /* USER CODE END startHumidity */
 }
 
 /* USER CODE BEGIN Header_startTemperature */
@@ -348,7 +348,7 @@ void startHumidity(void const * argument)
 /* USER CODE END Header_startTemperature */
 void startTemperature(void const * argument)
 {
-	/* USER CODE BEGIN startTemperature */
+  /* USER CODE BEGIN startTemperature */
 	uint32_t rawValue;
 	float voltage = 0;
 	float resistance = 0;
@@ -368,7 +368,7 @@ void startTemperature(void const * argument)
 	}
 	// In case we accidentally leave loop
 	osThreadTerminate(NULL);
-	/* USER CODE END startTemperature */
+  /* USER CODE END startTemperature */
 }
 
 /* Private application code --------------------------------------------------*/
