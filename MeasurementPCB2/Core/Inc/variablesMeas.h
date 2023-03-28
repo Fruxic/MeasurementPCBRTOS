@@ -14,7 +14,7 @@ extern unsigned char SPI_recv[5];
 extern unsigned char I2C_recv[10];
 extern unsigned char I2C_trans[6];
 
-extern unsigned char UART_trans[22];
+extern unsigned char UART_trans[26];
 
 
 extern unsigned char I2C_lock;

@@ -172,7 +172,7 @@ float complexABS(float real, float compl) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == GPIO_PIN_11) {
-		sprintf((char *)UART_trans, "%5.2f,%6.2f,%6.2f,%d", ampMax, freq, temp, humAlarm);
+		sprintf((char *)UART_trans, "#MU,%5.2f,%6.2f,%6.2f,%d", ampMax, freq, temp, humAlarm);
 		ret = HAL_UART_Transmit(&huart1, UART_trans, sizeof(UART_trans), 1000);
 		__NOP();
 	}

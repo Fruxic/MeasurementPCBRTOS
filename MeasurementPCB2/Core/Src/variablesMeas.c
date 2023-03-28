@@ -13,7 +13,7 @@ unsigned char I2C_trans[6];
 
 unsigned char I2C_lock = 0;
 
-char UART_trans[22];
+char UART_trans[26];
 
 unsigned long start;
 unsigned long stop;
